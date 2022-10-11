@@ -30,8 +30,8 @@ export class InjectedProvider extends Plugin {
       return reject(new Error('no injected provider found.'))
     }
     try {
-      if ((window as any) && typeof (window as any).ethereum.request === "function") (window as any).ethereum.request({ method: "eth_requestAccounts" });
-      if (!await (window as any).ethereum._metamask.isUnlocked()) this.call('notification', 'toast', 'Please make sure the injected provider is unlocked (e.g Metamask).')
+      if ((window as any) && typeof (window as any).ariel.request === "function") (window as any).ariel.request({ method: "eth_requestAccounts" });
+      if (!await (window as any).ariel._metamask.isUnlocked()) this.call('notification', 'toast', 'Please make sure the injected provider is unlocked (e.g Metamask).')
       await addL2Network(this.chainName, this.chainId, this.rpcUrls)
       const resultData = await this.provider.currentProvider.send(data.method, data.params)
       resolve({ jsonrpc: '2.0', result: resultData.result, id: data.id })
@@ -43,7 +43,7 @@ export class InjectedProvider extends Plugin {
 
 export const addL2Network =  async (chainName: string, chainId: string, rpcUrls: Array<string>) => {
   try {
-    await (window as any).ethereum.request({
+    await (window as any).ariel.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: chainId }],
     });
@@ -51,7 +51,7 @@ export const addL2Network =  async (chainName: string, chainId: string, rpcUrls:
     // This error code indicates that the chain has not been added to MetaMask.
     if (switchError.code === 4902) {
       try {
-        await (window as any).ethereum.request({
+        await (window as any).ariel.request({
           method: 'wallet_addEthereumChain',
           params: [
             {
@@ -62,7 +62,7 @@ export const addL2Network =  async (chainName: string, chainId: string, rpcUrls:
           ],
         });
 
-        await (window as any).ethereum.request({
+        await (window as any).ariel.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: chainId }],
         });
